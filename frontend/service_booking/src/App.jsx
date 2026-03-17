@@ -5,9 +5,10 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import { GlobalProvider, useGlobal } from './context/GlobalContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function Navbar() {
-  const { user, notifications } = useGlobal();
+  const { user, notifications, logout } = useGlobal();
 
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -19,14 +20,13 @@ function Navbar() {
         <div className="hidden md:flex gap-8 items-center">
           <Link to="/" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Home</Link>
           <Link to="/dashboard" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Dashboard</Link>
-          <Link to="/profile" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Profile</Link>
           
           <div className="h-6 w-px bg-slate-200 mx-2"></div>
 
           {user ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <div className="relative">
-                <span className="text-xl">🔔</span>
+                <span className="text-xl cursor-default">🔔</span>
                 {notifications > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
                     {notifications}
@@ -34,15 +34,21 @@ function Navbar() {
                 )}
               </div>
               <Link to="/profile" className="flex items-center gap-3 group">
-                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                  {user.avatar}
+                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all uppercase">
+                  {user.name.charAt(0)}
                 </div>
                 <span className="text-sm font-bold text-slate-700">{user.name.split(' ')[0]}</span>
               </Link>
+              <button 
+                onClick={logout}
+                className="text-slate-500 hover:text-red-600 text-sm font-bold transition-colors"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <div className="flex gap-4">
-              <Link to="/login" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Login</Link>
+              <Link to="/login" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors mt-2">Login</Link>
               <Link to="/signup" className="btn btn-primary text-sm px-6 py-2.5">Get Started</Link>
             </div>
           )}
@@ -78,8 +84,8 @@ const AppWrapper = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         </Routes>
       </main>
       <Footer />

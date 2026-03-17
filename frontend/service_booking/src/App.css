@@ -36,5 +36,15 @@
 .text-gradient-indigo {
   background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.clear-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-clip: padding-box;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
 }
