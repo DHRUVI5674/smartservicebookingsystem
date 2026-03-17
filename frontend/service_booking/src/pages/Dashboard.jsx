@@ -1,4 +1,29 @@
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
+const MOCK_API_BOOKINGS = [
+  { service: 'Deep Home Cleaning', date: 'Oct 24, 2023', status: 'Completed', statusBg: 'bg-emerald-100 text-emerald-700', price: '$80' },
+  { service: 'Emergency Plumbing', date: 'Oct 26, 2023', status: 'In Progress', statusBg: 'bg-indigo-100 text-indigo-700', price: '$120' },
+  { service: 'Electrical Panel Fix', date: 'Nov 02, 2023', status: 'In Review', statusBg: 'bg-amber-100 text-amber-700', price: '$95' },
+];
+
 export default function Dashboard() {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // useEffect demonstration: Simulated API call on component mount
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setLoading(true);
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setBookings(MOCK_API_BOOKINGS);
+      setLoading(false);
+    };
+
+    fetchBookings();
+  }, []); // Empty dependency array means this runs once on mount
+
   return (
     <div className="py-12 bg-slate-50/50 min-h-full">
       <div className="max-w-6xl mx-auto px-4">
@@ -34,7 +59,15 @@ export default function Dashboard() {
             <h3 className="font-extrabold text-slate-800 tracking-tight text-lg">Recent Activity</h3>
             <button className="text-xs font-bold text-indigo-600 hover:underline px-4 py-2 bg-indigo-50 rounded-lg transition-colors">View All →</button>
           </div>
-          <div className="overflow-x-auto">
+          
+          <div className="overflow-x-auto min-h-[300px] relative">
+            {loading ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-[2px] z-10 transition-opacity">
+                <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
+                <p className="text-sm font-bold text-indigo-600 animate-pulse">Fetching your bookings...</p>
+              </div>
+            ) : null}
+
             <table className="min-w-full divide-y divide-slate-100">
               <thead className="bg-slate-50/50">
                 <tr>
@@ -45,11 +78,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
-                {[
-                  { service: 'Deep Home Cleaning', date: 'Oct 24, 2023', status: 'Completed', statusBg: 'bg-emerald-100 text-emerald-700', price: '$80' },
-                  { service: 'Emergency Plumbing', date: 'Oct 26, 2023', status: 'In Progress', statusBg: 'bg-indigo-100 text-indigo-700', price: '$120' },
-                  { service: 'Electrical Panel Fix', date: 'Nov 02, 2023', status: 'In Review', statusBg: 'bg-amber-100 text-amber-700', price: '$95' },
-                ].map((row, i) => (
+                {bookings.map((row, i) => (
                   <tr key={i} className="hover:bg-slate-50/30 transition-colors">
                     <td className="py-5 px-8 text-sm font-bold text-slate-900">{row.service}</td>
                     <td className="py-5 px-8 text-sm text-slate-500 font-medium">{row.date}</td>

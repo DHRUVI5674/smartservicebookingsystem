@@ -4,8 +4,11 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
+import { GlobalProvider, useGlobal } from './context/GlobalContext';
 
 function Navbar() {
+  const { user, notifications } = useGlobal();
+
   return (
     <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -17,8 +20,32 @@ function Navbar() {
           <Link to="/" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Home</Link>
           <Link to="/dashboard" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Dashboard</Link>
           <Link to="/profile" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Profile</Link>
-          <Link to="/login" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Login</Link>
-          <Link to="/signup" className="btn btn-primary text-sm px-6 py-2.5">Get Started</Link>
+          
+          <div className="h-6 w-px bg-slate-200 mx-2"></div>
+
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <span className="text-xl">🔔</span>
+                {notifications > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">
+                    {notifications}
+                  </span>
+                )}
+              </div>
+              <Link to="/profile" className="flex items-center gap-3 group">
+                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                  {user.avatar}
+                </div>
+                <span className="text-sm font-bold text-slate-700">{user.name.split(' ')[0]}</span>
+              </Link>
+            </div>
+          ) : (
+            <div className="flex gap-4">
+              <Link to="/login" className="text-slate-600 hover:text-indigo-600 font-semibold text-sm transition-colors">Login</Link>
+              <Link to="/signup" className="btn btn-primary text-sm px-6 py-2.5">Get Started</Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>
@@ -42,22 +69,30 @@ function Footer() {
   );
 }
 
+const AppWrapper = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <GlobalProvider>
+      <BrowserRouter>
+        <AppWrapper />
+      </BrowserRouter>
+    </GlobalProvider>
   );
 }
